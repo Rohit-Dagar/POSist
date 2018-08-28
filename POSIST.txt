@@ -1,0 +1,175 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+int globalnum=1;
+
+
+struct node {
+    int dt[3];
+    int time[3];
+    string data[5];    float dataval;
+    int nodenum=0;
+    node * nodeid=NULL;
+    node * refid=NULL;
+    vector < node * > childid;
+    node * refchildid=NULL;
+};
+
+node * parent=NULL;
+vector <pair < int , node * > > add;
+vector < vector < node * > > v;
+
+void user(struct node *r){
+    int x=rand();
+    int y=rand();
+    int z=rand();
+    r->dt[0]=x%24;
+    r->dt[1]=y%60;
+    r->dt[2]=z%60;
+    r->time[0]=z%28;
+    r->time[1]=y%12;
+    r->time[2]=2018;
+
+    cout<<"enter data attributes";
+    for(int i=0;i<5;i++)
+    {
+        cin>>r->data[i];
+    }
+    cin>>r->dataval;
+    r->nodenum=globalnum++;
+    r->nodeid=r;
+    pair < int , node * > p;
+    p.first=r->nodenum;
+    p.second=r;
+    add.push_back(p);
+
+}
+
+void dfs(node * tNode, vector < node * > temp){
+    if(tNode->childid.size())
+    {
+        for (int j=0;j<tNode->childid.size();j++)
+        {
+            temp.push_back(tNode->childid[j]);
+            dfs(tNode->childid[j],temp);
+        }
+    }
+
+}
+
+int main(){
+    int c=1;
+    while(c==1){
+
+        cout<<"Chose an option to execute"<<endl;
+        int option;
+        cin>>option;
+        switch(option)
+        {
+        case 1:
+            {
+            node *root=new node();
+            root->refid=NULL;
+            user(root);
+            parent=root;
+            break;
+            }
+            case 2:{
+                int nm;
+                cout<<"Enter the NodeNumber to  create MultiSet"<<endl;
+                cin>>nm;
+                node *tfirst;
+                user(tfirst);
+                tfirst->refid=parent;
+                node *childidd=parent;
+                parent->childid.push_back(tfirst);
+                break;
+            }
+            case 3:{
+                int nnm;
+                cout<<"Enter the NodeNumber to  create MultiSet"<<endl;
+                cin>>nnm;
+                node *tNode;
+                user(tNode);
+                for(int i=0;i<add.size();i++)
+                {
+                    if(add[i].first==nnm)
+                    {
+                        tNode->refid=add[i].second;
+                        add[i].second->childid.push_back(tNode);
+                        break;
+                    }
+                }
+                break;
+            }
+            case 4:
+                {
+
+                   for(int i=0;i<add.size();i++){
+
+                        string s=add[i].second->data[0]+add[i].second->data[1]+add[i].second->data[2]+add[i].second->data[3]+add[i].second->data[4];
+                        ostringstream str1;
+                        str1 <<add[i].second->dataval;
+                        s+="str1";
+                        for(int i=0;i<s.length();i++)
+                        {
+                           int a=s[i];
+                           s[i]=a;
+                        }
+
+                   }
+                   break;
+                }
+
+
+            case 8:
+            {
+                //longest Chain from main node can Be identified by using Dfs by passing parent
+                vector < node *> temp;
+                temp.push_back(parent);
+                dfs(parent,temp);
+                int maxlen=0;
+                for(int i=0;i<v.size();i++)
+                {
+                    if(v[i].size()>maxlen)
+                    {
+                        maxlen=v[i].size();
+                    }
+                }
+                break;
+            }
+            case 9:
+                {
+                    //longest chain from any particular node can be identified by using DFS from that node;
+                    vector < node *> temp;
+                    int nnm;
+                    node * nodeadd;
+                    cout<<"enter thr node from where we have to calculate length";
+                    cin>>nnm;
+                    for(int i=0;i<add.size();i++)
+                    {
+                        if(add[i].first==nnm)
+                        {
+                            nodeadd=add[i].second;
+                        }
+                    }
+                temp.push_back(nodeadd);
+                dfs(nodeadd,temp);
+                int maxlen=0;
+                for(int i=0;i<v.size();i++)
+                {
+                    if(v[i].size()>maxlen)
+                    {
+                        maxlen=v[i].size();
+                    }
+                }
+                break;
+                }
+            default:{
+                //if none of the case matches EXIT by making C=2
+                c=2;
+            }
+    }
+    }
+    return 0;
+}
